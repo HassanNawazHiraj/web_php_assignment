@@ -43,9 +43,9 @@ class Functions {
 		$sql = $sql1 . $sql2;
 
 		if ($this->db->query($sql) === TRUE) {
-			echo "New record created successfully";
+			return true;
 		} else {
-			echo "Error: " . $sql . "<br>" . $conn->error;
+			return "Error: " . $sql . "<br>" . $conn->error;
 		}
 
 
@@ -108,6 +108,25 @@ class Functions {
 		} else {
 			return false;
 		}
+	}
+
+	function read_where($table, $where) {
+		$sql = "SELECT * FROM `$table` WHERE ";
+		for($d=0; $d<count($where); $d++) {
+			if($d != count($where) -1) {
+				$sql .= $where[$d][0]."=".$where[$d][1]." and ";
+			} else {
+				$sql .= $where[$d][0]."=".$where[$d][1];
+			}
+		}
+
+		$result = $this->db->query($sql);
+		if($result) {
+			if ($result->num_rows > 0) {
+				return $result->fetch_all(MYSQLI_ASSOC);
+			} 
+		}
+		return false;
 	}
 
 	function delete($table, $where, $value) {
