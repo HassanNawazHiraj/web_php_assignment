@@ -4,7 +4,7 @@ final assignment for my semester
 
 Its a simple web application that allows users that does the following tasks
   - login
-  - signuo
+  - signup
   - view, edit, delete employee data
   - upload and view employee photo
   
