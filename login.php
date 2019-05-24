@@ -1,12 +1,30 @@
 <?php
+session_start();
 //signup file
 include_once("functions.php");
+
+//if user directly accessed dashboard show this message
+if(isset($_GET['show_direct_access_error'])) {
+    $alert = "please login to access Dashboard";
+}
+
+
+
+//if already logined then redirect to dashboard
+if(isset($_COOKIE['user'])) {
+    header("location: index.php?already_loged_in=1");
+}
+
+
+//login process
 if(isset($_POST['username']) && isset($_POST['password'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
     $db = new Functions();
     $db->connect();
 
+
+//data to send to functions
     $data = [
         ["user_name", "'".$username."'"],
         ["user_password", "'".$password."'"]
@@ -14,8 +32,13 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 
     $response = $db->read_where("users", $data);
     
+
+
+    //handle response and redirect
     if($response) {
-        $success = "correct username/password";
+        setcookie("user", $username, time() + 3600);
+        $_SESSION['loginCount'] += 1;
+        header("location: index.php");
     } else {
         $alert = "wrong username/password";
     }

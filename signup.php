@@ -1,21 +1,40 @@
 <?php
+session_start();
 //signup file
 include_once("functions.php");
+
+//already logined to redirect
+if(isset($_COOKIE['user'])) {
+    header("location: index.php?already_loged_in=1");
+}
+
+
+//check if we get post data then register
 if(isset($_POST['username']) && isset($_POST['email']) && isset($_POST['password'])) {
     $username = $_POST['username'];
     $email = $_POST['email'];
     $password = $_POST['password'];
+
+
     $db = new Functions();
     $db->connect();
+
+    //data to send to functions
     $data = [
         ["user_name", $username],
         ["user_email", $email],
         ["user_password", $password]
     ];
+
     $response = $db->create("users", $data);
+
+
+    //handle response
     if($response == true) {
+        //show this message to user
         $success = "User registerd successfully!";
     } else {
+        //show error to user
         $alert = $response;
     }
 } 
