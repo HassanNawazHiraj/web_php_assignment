@@ -51,7 +51,7 @@ class Functions {
 
 	}
 
-	function update($table, $where, $data) {
+	function update($table, $data, $where) {
 
 
 		$sql = "UPDATE `$table` SET ";
@@ -90,6 +90,7 @@ class Functions {
 		$result = $this->db->query($sql);
 
 		if ($result->num_rows > 0) {
+
 			return $result->fetch_all(MYSQLI_ASSOC);
 		} else {
 			return false;
@@ -104,7 +105,7 @@ class Functions {
 		$result = $this->db->query($sql);
 
 		if ($result->num_rows > 0) {
-			return $result->fetch_all(MYSQLI_ASSOC);
+			return $result->fetch_all(MYSQLI_ASSOC)[0];
 		} else {
 			return false;
 		}

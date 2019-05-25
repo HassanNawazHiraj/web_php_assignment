@@ -9,3 +9,5 @@ Its a simple web application that allows users that does the following tasks
   - upload and view employee photo
   
 all of this coded in core php. 
+
+run index.php

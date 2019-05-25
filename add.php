@@ -1,25 +1,88 @@
 <?php
 session_start();
 include_once("functions.php");
-//dashboard file
+//view file
 if(!isset($_COOKIE['user'])) {
 	header("location: login.php?show_direct_access_error=true");
 }
-//alert msg
-if(isset($_GET['already_loged_in']))
-{
-	$message = "You are already loged in. Please logout";
-}
-//alert msg
 
-if(isset($_GET['delete'])) {
-	$success = "employee deleted successfully";
+//ndsp
+if(isset($_POST['en']) && isset($_POST['ed']) && isset($_POST['es'])) {
+	$name = $_POST['en'];
+	$desi = $_POST['ed'];
+	$Salary = $_POST['es'];
+
+
+
+	//upload image
+	
+	$target_dir = "uploads/";
+	$target_file = $target_dir . basename($_FILES["ep"]["name"]);
+	$uploadOk = 1;
+	$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+// Check if image file is a actual image or fake image
+	if(isset($_POST["submit"])) {
+		$check = getimagesize($_FILES["ep"]["tmp_name"]);
+		if($check !== false) {
+			echo "File is an image - " . $check["mime"] . ".";
+			$uploadOk = 1;
+		} else {
+			die ("File is not an image.");
+			$uploadOk = 0;
+		}
+	}
+// Check if file already exists
+	if (file_exists($target_file)) {
+		die ("Sorry, file already exists.");
+		$uploadOk = 0;
+	}
+// Check file size
+	if ($_FILES["ep"]["size"] > 500000) {
+		die ("Sorry, your file is too large.");
+		$uploadOk = 0;
+	}
+// Allow certain file formats
+	if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+		&& $imageFileType != "gif" ) {
+		die ("Sorry, only JPG, JPEG, PNG & GIF files are allowed.");
+	$uploadOk = 0;
+}
+// Check if $uploadOk is set to 0 by an error
+if ($uploadOk == 0) {
+	die( "Sorry, your file was not uploaded.");
+// if everything is ok, try to upload file
+} else {
+	if (move_uploaded_file($_FILES["ep"]["tmp_name"], $target_file)) {
+		echo "The file ". basename( $_FILES["ep"]["name"]). " has been uploaded.";
+
+	} else {
+		die ("Sorry, there was an error uploading your file.");
+	}
 }
 
-//get employees
+
+
+
+
+
+
+
+
+
+
+
 $db = new Functions();
 $db->connect();
-$employees = $db->read_all("employee_info");
+$data = [
+	["emp_name", $name],
+	["emp_designation", $desi],
+	["emp_salary",$Salary],
+	["emp_photo", $target_file]
+];
+$db->create("employee_info", $data);
+header("location: index.php");
+}
+
 
 ?>
 
@@ -33,7 +96,7 @@ $employees = $db->read_all("employee_info");
 	<meta name="description" content=""/>
 	<meta name="author" content=""/>
 
-	<title>ByteRemix - Dashboard</title>
+	<title>ByteRemix - Add employee</title>
 
 	<!-- Bootstrap Core CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"/>
@@ -93,47 +156,17 @@ $employees = $db->read_all("employee_info");
 			echo $message;
 			echo '</div>';
 		}
-
-		if(isset($success)) {
-			echo '<div class="alert alert-success" role="alert">';
-			echo $success;
-			echo '</div>';
-		}
 		?>
 		<br><br>
-		<a href="add.php"> Add a new employee </a>
+		<a href="index.php"> back </a>
 		<br>
-		<table class="table">
-			<tr>
-				<td> ID </td>
-				<td> Name </td>
-				<td> Designation </td>
-				<td> Salary </td>
-				<td> Photo </td>
-				<td> Actions </td>
-			</tr>
-			<?php
-				//show all data
-
-			if($employees) {
-				echo count($employees) . " records";
-
-				foreach($employees as $empoyee) {
-					echo "<tr>";
-					echo "<td>".$empoyee["emp_id"]."</td>";
-					echo "<td>".$empoyee["emp_name"]."</td>";
-					echo "<td>".$empoyee["emp_designation"]."</td>";
-					echo "<td>".$empoyee["emp_salary"]."</td>";
-					echo "<td> click view </td>";
-					echo ("<td><a href='view.php?id=".$empoyee["emp_id"]."'>view</a> | <a href='edit.php?id=".$empoyee["emp_id"]."'>edit</a> | <a href='delete.php?id=".$empoyee["emp_id"]."'>delete</a></td>");
-					echo "</tr>";
-				}
-
-			} else {
-				echo "0 records";
-			}
-			?>
-		</table>
+		<form method="post" action="" enctype="multipart/form-data">
+			<h3> Name </h3> <p> <input name="en" type="text"  /> </p>
+			<h3> Designation </h3> <p> <input name="ed" type="text"  /> </p>
+			<h3> Salary </h3> <p> <input name="es" type="text"  /> </p>
+			<h3> Photo </h3> <input type="file" name="ep" id="ep"> </p>
+			<input type="submit" value="Add" />
+		</form>
 		<!-- /.row -->
 	</div>
 	<!-- /.container -->
