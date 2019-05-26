@@ -90,12 +90,21 @@ if(isset($_POST['en']) && isset($_POST['ed']) && isset($_POST['es'])) {
 
 $db = new Functions();
 $db->connect();
-$data = [
+if(isset($target_file)) {
+	$data = [
 	["emp_name", $name],
 	["emp_designation", $desi],
 	["emp_salary",$Salary],
 	["emp_photo", $target_file]
 ];
+} else {
+	$data = [
+	["emp_name", $name],
+	["emp_designation", $desi],
+	["emp_salary",$Salary]
+];
+}
+
 $db->update("employee_info", $data, [["emp_id", $id]]);
 header("location: index.php");
 }
